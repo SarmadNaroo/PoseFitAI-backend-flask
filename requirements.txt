@@ -1,1 +1,8 @@
 flask
+python-dotenv
+psycopg2-binary
+Flask-SQLAlchemy
+Flask-Migrate
+werkzeug
+uuid
+flask-jwt-extended
