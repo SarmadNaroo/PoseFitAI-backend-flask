@@ -5,6 +5,7 @@ from .routes.auth_routes import auth_blueprint
 from .routes.user_routes import users_blueprint
 from .routes.session_routes import session_blueprint
 from .routes.plank_routes import plank_blueprint
+from .routes.squate_routes import squat_blueprint
 from app.models.user import User
 from app.models.tokenblocklist import TokenBlocklist
 
@@ -20,10 +21,12 @@ def create_app():
     def home():
         return 'Hello, Flask is running!'
 
+    # Register blueprints for routes
     app.register_blueprint(auth_blueprint, url_prefix='/auth')
     app.register_blueprint(users_blueprint, url_prefix='/users')
     app.register_blueprint(session_blueprint, url_prefix='/session')
     app.register_blueprint(plank_blueprint, url_prefix='/plank')
+    app.register_blueprint(squat_blueprint, url_prefix='/squat')
 
      # load user
     @jwt.user_lookup_loader
