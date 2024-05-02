@@ -3,6 +3,8 @@ from .models import db, migrate, jwt
 from config import Config
 from .routes.auth_routes import auth_blueprint
 from .routes.user_routes import users_blueprint
+from .routes.session_routes import session_blueprint
+from .routes.plank_routes import plank_blueprint
 from app.models.user import User
 from app.models.tokenblocklist import TokenBlocklist
 
@@ -20,6 +22,8 @@ def create_app():
 
     app.register_blueprint(auth_blueprint, url_prefix='/auth')
     app.register_blueprint(users_blueprint, url_prefix='/users')
+    app.register_blueprint(session_blueprint, url_prefix='/session')
+    app.register_blueprint(plank_blueprint, url_prefix='/plank')
 
      # load user
     @jwt.user_lookup_loader
