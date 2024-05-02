@@ -20,6 +20,8 @@ def register():
     username = data.get('username')
     email = data.get('email')
     password = data.get('password')
+    gender = data.get('gender')
+    age = data.get('age')
     
     # Attempt to convert height and weight to float
     try:
@@ -35,7 +37,7 @@ def register():
     if User.query.filter_by(email=email).first():
         return jsonify({'error': 'Email already exists'}), 409
 
-    user = User(id=userid, username=username, email=email, height=height, weight=weight)
+    user = User(id=userid, username=username, email=email,gender=gender, age=age, height=height, weight=weight)
     user.set_password(password)
     db.session.add(user)
     db.session.commit()
