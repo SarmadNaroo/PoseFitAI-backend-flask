@@ -11,6 +11,8 @@ class User(db.Model):
     username = db.Column(db.String(), nullable=False)
     email = db.Column(db.String(), nullable=False)
     password = db.Column(db.Text())
+    gender = db.Column(db.String())
+    age = db.Column(db.Integer)
     weight = db.Column(db.Float)
     height = db.Column(db.Float)
 
