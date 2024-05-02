@@ -6,38 +6,67 @@ from flask_jwt_extended import jwt_required, current_user
 
 session_blueprint = Blueprint('session', __name__)
 
+@session_blueprint.route('/start', methods=['GET'])
+@jwt_required()
+def start_session():
+    new_session = SessionHistory(
+        user_id=current_user.id,
+        start_time=datetime.utcnow(),  # Start time set to the current time
+        completed=False
+    )
+    db.session.add(new_session)
+    db.session.commit()
+    return jsonify({'message': 'Session started', 'id': new_session.id}), 201
+
+@session_blueprint.route('/update', methods=['POST'])
+@jwt_required()
+def update_session():
+    # Fetch the most recent session for the current user
+    session = SessionHistory.query.filter_by(user_id=current_user.id).order_by(SessionHistory.start_time.desc()).first()
+    
+    # Check if the session is either non-existent or already completed
+    if not session or session.completed:
+        return jsonify({'message': 'No active session found to update'}), 404
+    
+    data = request.get_json()
+    session.correct = data.get('correct', session.correct)
+    session.incorrect = data.get('incorrect', session.incorrect)
+    session.end_time = datetime.utcnow()  # Continuously update end time
+    session.duration = (session.end_time - session.start_time).seconds
+
+    db.session.commit()
+    return jsonify({'message': 'Session updated', 'id': session.id}), 200
+
+@session_blueprint.route('/end', methods=['POST'])
+@jwt_required()
+def end_session():
+    # Fetch the most recent session for the current user
+    session = SessionHistory.query.filter_by(user_id=current_user.id).order_by(SessionHistory.start_time.desc()).first()
+    
+    # Check if the session is either non-existent or already completed
+    if not session or session.completed:
+        return jsonify({'message': 'No active session found to end'}), 404
+    
+    data = request.get_json()
+    session.correct = data.get('correct', session.correct)
+    session.incorrect = data.get('incorrect', session.incorrect)
+    session.completed = True
+    session.end_time = datetime.utcnow()  # Mark final end time
+    session.duration = (session.end_time - session.start_time).seconds
+
+    db.session.commit()
+    return jsonify({'message': 'Session ended', 'id': session.id, 'duration': session.duration}), 200
+
 @session_blueprint.route('/all', methods=['GET'])
 @jwt_required()
 def get_sessions():
-    # Retrieve only sessions associated with the current user
     sessions = SessionHistory.query.filter_by(user_id=current_user.id).all()
     return jsonify([{
         'id': session.id,
-        'user_id': session.user_id,
         'exercise_name': session.exercise_name,
-        'start_time': session.start_time.isoformat(),
-        'end_time': session.end_time.isoformat(),
+        'start_time': session.start_time.isoformat() if session.start_time else None,
+        'end_time': session.end_time.isoformat() if session.end_time else None,
         'duration': session.duration,
         'correct': session.correct,
-        'incorrect': session.incorrect
+        'incorrect': session.incorrect,
     } for session in sessions]), 200
-
-@session_blueprint.route('/add', methods=['POST'])
-@jwt_required()
-def add_session():
-    data = request.get_json()
-    # Using current_user.id to ensure the session is added for the authenticated user
-    new_session = SessionHistory(
-        user_id=current_user.id,  # This ensures the session is associated with the logged-in user
-        exercise_name=data.get('exercise_name'),
-        start_time=datetime.fromisoformat(data.get('start_time')),  # Ensuring to use .get for safer extraction
-        end_time=datetime.fromisoformat(data.get('end_time')),
-        duration=data.get('duration', (datetime.fromisoformat(data.get('end_time')) - datetime.fromisoformat(data.get('start_time'))).seconds),
-        correct=data.get('correct', 0),
-        incorrect=data.get('incorrect', 0)
-    )
-
-    db.session.add(new_session)
-    db.session.commit()
-
-    return jsonify({'id': new_session.id}), 201

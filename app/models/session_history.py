@@ -10,3 +10,4 @@ class SessionHistory(db.Model):
     duration = db.Column(db.Integer)
     correct = db.Column(db.Integer)
     incorrect = db.Column(db.Integer)
+    completed = db.Column(db.Boolean, default=False)
