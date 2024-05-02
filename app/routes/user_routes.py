@@ -12,7 +12,9 @@ def get_users():
         'username': user.username,
         'email': user.email,
         'weight': user.weight,
-        'height': user.height
+        'height': user.height,
+        'gender': user.gender,
+        'age': user.age,
     } for user in users]
 
     return jsonify(users_list), 200
