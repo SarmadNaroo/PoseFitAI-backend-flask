@@ -6,3 +6,4 @@ Flask-Migrate
 werkzeug
 uuid
 flask-jwt-extended
+flask-cors

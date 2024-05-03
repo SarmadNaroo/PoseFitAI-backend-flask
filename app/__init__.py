@@ -8,10 +8,12 @@ from .routes.plank_routes import plank_blueprint
 from .routes.squate_routes import squat_blueprint
 from app.models.user import User
 from app.models.tokenblocklist import TokenBlocklist
+from flask_cors import CORS
 
 def create_app():
     app = Flask(__name__)
     app.config.from_object(Config)
+    CORS(app, resources={r"/*": {"origins": "*"}})
 
     db.init_app(app)
     migrate.init_app(app, db)
