@@ -25,7 +25,7 @@ def create_app():
 
     # Register blueprints for routes
     app.register_blueprint(auth_blueprint, url_prefix='/auth')
-    app.register_blueprint(users_blueprint, url_prefix='/users')
+    app.register_blueprint(users_blueprint, url_prefix='/user')
     app.register_blueprint(session_blueprint, url_prefix='/session')
     app.register_blueprint(plank_blueprint, url_prefix='/plank')
     app.register_blueprint(squat_blueprint, url_prefix='/squat')
