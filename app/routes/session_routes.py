@@ -6,17 +6,28 @@ from flask_jwt_extended import jwt_required, current_user
 
 session_blueprint = Blueprint('session', __name__)
 
-@session_blueprint.route('/start', methods=['GET'])
+@session_blueprint.route('/start', methods=['POST'])
 @jwt_required()
 def start_session():
-    new_session = SessionHistory(
-        user_id=current_user.id,
-        start_time=datetime.utcnow(),  # Start time set to the current time
-        completed=False
-    )
-    db.session.add(new_session)
-    db.session.commit()
-    return jsonify({'message': 'Session started', 'id': new_session.id}), 201
+    if not request.json or 'exercise_name' not in request.json:
+        return jsonify({'error': 'Missing exercise name'}), 400
+
+    exercise_name = request.json['exercise_name']
+
+    try:
+        new_session = SessionHistory(
+            user_id=current_user.id,
+            exercise_name=exercise_name,
+            start_time=datetime.utcnow(),
+            completed=False
+        )
+        db.session.add(new_session)
+        db.session.commit()
+        return jsonify({'message': 'Session started', 'id': new_session.id}), 201
+
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'error': str(e)}), 500
 
 @session_blueprint.route('/update', methods=['POST'])
 @jwt_required()
