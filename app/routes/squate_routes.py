@@ -13,7 +13,6 @@ def add_or_update_squat():
 
     correct = data.get('correct', 0)
     incorrect = data.get('incorrect', 0)
-    duration = data.get('duration', 0)
     new_feedback = data.get('feedback', {})
 
     # Query the existing squat exercise for the current user
@@ -23,7 +22,6 @@ def add_or_update_squat():
         # Update the existing squat exercise
         existing_squat.correct += correct
         existing_squat.incorrect += incorrect
-        existing_squat.duration += duration
 
         # Merge the new feedback with the existing feedback
         for key, value in new_feedback.items():
@@ -45,7 +43,6 @@ def add_or_update_squat():
             user_id=current_user.id,
             correct=correct,
             incorrect=incorrect,
-            duration=duration,
             feedback=new_feedback
         )
         db.session.add(new_squat)
@@ -61,7 +58,6 @@ def get_squat():
         return jsonify({
             'correct': squat.correct,
             'incorrect': squat.incorrect,
-            'duration': squat.duration,
             'feedback': squat.feedback
         }), 200
     else:
