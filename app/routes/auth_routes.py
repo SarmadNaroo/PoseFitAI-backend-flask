@@ -81,7 +81,7 @@ def whoami():
         }
     )
 
-@auth_blueprint.get("/refresh")
+@auth_blueprint.post("/refresh")
 @jwt_required(refresh=True)
 def refresh_access():
     identity = get_jwt_identity()
